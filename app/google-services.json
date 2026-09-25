@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "76531960671",
+    "project_id": "javilla-safarihub",
+    "storage_bucket": "javilla-safarihub.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76531960671:android:f83d553583c62bb28684ea",
+        "android_client_info": {
+          "package_name": "com.kigz.javillasafarihub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "76531960671-hecgaf74i65bl782e2jnknvirqj1q6s1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKU4Ra8t3jbm_h2NB6Cf6oW3yqTYcWXO8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "76531960671-hecgaf74i65bl782e2jnknvirqj1q6s1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

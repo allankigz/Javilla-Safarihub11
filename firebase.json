@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs22",
+    "predeploy": ["npm --prefix functions run build"]
+  },
+  "database": {
+    "rules": "firebase_database.rules.json"
+  }
+}

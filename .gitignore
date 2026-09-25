@@ -1,0 +1,11 @@
+.gradle/
+local.properties
+.idea/
+*.iml
+build/
+app/build/
+functions/node_modules/
+functions/lib/
+functions/.runtimeconfig.json
+.firebase/
+.DS_Store
