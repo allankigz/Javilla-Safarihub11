@@ -208,7 +208,9 @@ fun DestinationCard(destination: Destination, onFavoriteClick: () -> Unit, onCli
                         TextButton(onClick = onDetailsClick) {
                             Text(text = translate("Details", language), color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
                         }
-                        Text(text = translate("Visit Website", language), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                        TextButton(onClick = onClick) {
+                            Text(text = translate("Visit Website", language), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }
