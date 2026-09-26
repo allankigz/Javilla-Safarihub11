@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material3.*
@@ -48,7 +49,7 @@ private val attractions = listOf(
 )
 
 @Composable
-fun NearbyAttractionsScreen() {
+fun NearbyAttractionsScreen(onBackClick: () -> Unit = {}) {
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     var userLat by remember { mutableStateOf<Double?>(null) }
@@ -94,7 +95,18 @@ fun NearbyAttractionsScreen() {
     }
 
     Scaffold(
-        containerColor = androidx.compose.ui.graphics.Color.Transparent,topBar = { TopAppBar(title = { Text("Nearby Attractions") }) }) { paddingValues ->
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
+        topBar = {
+            TopAppBar(
+                title = { Text("Nearby Attractions") },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             contentPadding = PaddingValues(16.dp),

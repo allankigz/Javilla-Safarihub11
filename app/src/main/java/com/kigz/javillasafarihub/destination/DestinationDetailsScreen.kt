@@ -35,7 +35,8 @@ import com.kigz.javillasafarihub.model.Destination
 @Composable
 fun DestinationDetailsScreen(
     destination: Destination,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onPlanTripClick: (Destination) -> Unit = {}
 ) {
     val context = LocalContext.current
     val language = LocalLanguageManager.current.currentLanguage
@@ -224,7 +225,7 @@ fun DestinationDetailsScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { },
+                    onClick = { onPlanTripClick(destination) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp)
                 ) {
