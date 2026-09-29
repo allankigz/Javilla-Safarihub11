@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Terrain
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -201,14 +202,31 @@ fun DestinationDetailsScreen(
                     ActivityItem(activity = activity)
                 }
 
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        try {
+                            val mapUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(destination.name + " " + destination.location)}")
+                            context.startActivity(Intent(Intent.ACTION_VIEW, mapUri))
+                        } catch (_: Exception) {
+                            android.widget.Toast.makeText(context, translate("Unable to open map.", language), android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Icon(Icons.Default.Map, null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(translate("View Location on Map", language))
+                }
+
                 if (destination.websiteUrl.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     OutlinedButton(
                         onClick = {
                             try {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(destination.websiteUrl))
-                                if (intent.resolveActivity(context.packageManager) != null) context.startActivity(intent)
-                                else android.widget.Toast.makeText(context, translate("No browser is available.", language), android.widget.Toast.LENGTH_SHORT).show()
+                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(destination.websiteUrl)))
                             } catch (_: Exception) {
                                 android.widget.Toast.makeText(context, translate("Unable to open the website.", language), android.widget.Toast.LENGTH_SHORT).show()
                             }
@@ -222,7 +240,7 @@ fun DestinationDetailsScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
                     onClick = { onPlanTripClick(destination) },

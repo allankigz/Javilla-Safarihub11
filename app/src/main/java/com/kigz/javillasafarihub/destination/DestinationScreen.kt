@@ -147,21 +147,27 @@ fun DestinationScreen(onBackClick: () -> Unit = {}) {
                 }
             },
             confirmButton = {
-                if (destination.websiteUrl.isNotBlank()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     TextButton(onClick = {
                         try {
-                            val uri = Uri.parse(destination.websiteUrl)
-                            val intent = Intent(Intent.ACTION_VIEW, uri)
-                            if (intent.resolveActivity(context.packageManager) != null) {
-                                context.startActivity(intent)
-                                selectedDestination = null
-                            } else {
-                                android.widget.Toast.makeText(context, translate("No browser is available to open this destination.", language), android.widget.Toast.LENGTH_SHORT).show()
-                            }
+                            val mapUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(destination.name + " " + destination.location)}")
+                            context.startActivity(Intent(Intent.ACTION_VIEW, mapUri))
                         } catch (_: Exception) {
-                            android.widget.Toast.makeText(context, translate("Unable to open this destination link.", language), android.widget.Toast.LENGTH_SHORT).show()
+                            android.widget.Toast.makeText(context, translate("Unable to open map.", language), android.widget.Toast.LENGTH_SHORT).show()
                         }
-                    }) { Text(translate("Visit Website", language)) }
+                    }) { Text(translate("View on Map", language)) }
+
+                    if (destination.websiteUrl.isNotBlank()) {
+                        TextButton(onClick = {
+                            try {
+                                val uri = Uri.parse(destination.websiteUrl)
+                                context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+                                selectedDestination = null
+                            } catch (_: Exception) {
+                                android.widget.Toast.makeText(context, translate("Unable to open this destination link.", language), android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                        }) { Text(translate("Visit Website", language)) }
+                    }
                 }
             },
             dismissButton = { TextButton(onClick = { selectedDestination = null }) { Text(translate("Close", language)) } }
