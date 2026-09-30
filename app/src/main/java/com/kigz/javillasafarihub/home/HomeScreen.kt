@@ -579,9 +579,11 @@ fun SettingsContent(paddingValues: PaddingValues, onLoginClick: () -> Unit = {})
             Column(Modifier.padding(16.dp)) {
                 Text(translate("Appearance", language), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(8.dp))
+                val isSystemDark = androidx.compose.foundation.isSystemInDarkTheme()
+                val isDarkActive = themeManager.isDarkTheme ?: isSystemDark
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(translate("Dark Mode", language), Modifier.weight(1f), fontSize = 14.sp)
-                    androidx.compose.material3.Switch(checked = themeManager.isDarkTheme == true, onCheckedChange = { themeManager.toggleTheme(it) })
+                    androidx.compose.material3.Switch(checked = isDarkActive, onCheckedChange = { themeManager.toggleTheme(it) })
                 }
             }
         }

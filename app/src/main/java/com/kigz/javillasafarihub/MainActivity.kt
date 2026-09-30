@@ -20,9 +20,21 @@ import java.util.Locale
 val LocalThemeManager = compositionLocalOf { ThemeManager() }
 val LocalLanguageManager = compositionLocalOf { LanguageManager() }
 
-class ThemeManager {
-    var isDarkTheme by mutableStateOf<Boolean?>(null)
-    fun toggleTheme(isDark: Boolean?) { isDarkTheme = isDark }
+class ThemeManager(private val context: android.content.Context? = null) {
+    private val prefs = context?.getSharedPreferences("javilla_preferences", android.content.Context.MODE_PRIVATE)
+    var isDarkTheme by mutableStateOf<Boolean?>(
+        if (prefs?.contains("dark_theme") == true) prefs.getBoolean("dark_theme", false) else null
+    )
+        private set
+
+    fun toggleTheme(isDark: Boolean?) {
+        isDarkTheme = isDark
+        if (isDark == null) {
+            prefs?.edit()?.remove("dark_theme")?.apply()
+        } else {
+            prefs?.edit()?.putBoolean("dark_theme", isDark)?.apply()
+        }
+    }
 }
 
 class LanguageManager(private val context: android.content.Context? = null) {
@@ -42,8 +54,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val themeManager = remember { ThemeManager() }
             val context = LocalContext.current
+            val themeManager = remember { ThemeManager(context.applicationContext) }
             val languageManager = remember { LanguageManager(context.applicationContext) }
             
             // Key to force recomposition when language changes
