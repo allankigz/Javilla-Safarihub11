@@ -41,10 +41,11 @@ import java.util.Locale
 import java.util.Calendar
 
 private fun openMaps(context: android.content.Context, query: String) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(query)}"))
     try {
-        if (intent.resolveActivity(context.packageManager) != null) context.startActivity(intent)
-        else android.widget.Toast.makeText(context, "No maps or browser application is available.", android.widget.Toast.LENGTH_SHORT).show()
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(query)}")).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(intent)
     } catch (_: Exception) {
         android.widget.Toast.makeText(context, "Unable to open Maps.", android.widget.Toast.LENGTH_SHORT).show()
     }
@@ -176,7 +177,9 @@ fun EnhancedEmergencyScreen(onBackClick: () -> Unit = {}) {
     }
     fun call(number: String) {
         try {
-            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number"))
+            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number")).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
             context.startActivity(intent)
         } catch (_: Exception) {
             android.widget.Toast.makeText(context, translate("Unable to open the phone app.", language), android.widget.Toast.LENGTH_SHORT).show()

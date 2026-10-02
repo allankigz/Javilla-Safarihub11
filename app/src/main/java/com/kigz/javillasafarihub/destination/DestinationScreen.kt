@@ -1,7 +1,9 @@
 package com.kigz.javillasafarihub.destination
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,12 +26,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.kigz.javillasafarihub.LocalLanguageManager
 import com.kigz.javillasafarihub.localization.translate
 import com.kigz.javillasafarihub.data.repository.DestinationRepository
 import com.kigz.javillasafarihub.model.Destination
+
+private fun openDestinationWebsite(context: Context, url: String, language: String) {
+    if (url.isBlank()) {
+        Toast.makeText(context, translate("No website available for this destination.", language), Toast.LENGTH_SHORT).show()
+        return
+    }
+    try {
+        val uri = Uri.parse(url)
+        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(intent)
+    } catch (_: Exception) {
+        Toast.makeText(context, translate("Unable to open this destination link.", language), Toast.LENGTH_SHORT).show()
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +81,10 @@ fun DestinationScreen(onBackClick: () -> Unit = {}) {
                     IconButton(onClick = onBackClick) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                )
             )
         }
     ) { paddingValues ->
@@ -107,23 +127,8 @@ fun DestinationScreen(onBackClick: () -> Unit = {}) {
                             repository.toggleFavorite(destination.id)
                             favoriteVersion++
                         },
-                        onClick = {
-                            if (destination.websiteUrl.isNotBlank()) {
-                                try {
-                                    val uri = destination.websiteUrl.toUri()
-                                    val intent = Intent(Intent.ACTION_VIEW, uri)
-                                    if (intent.resolveActivity(context.packageManager) != null) {
-                                        context.startActivity(intent)
-                                    } else {
-                                        android.widget.Toast.makeText(context, translate("No browser is available to open this destination.", language), android.widget.Toast.LENGTH_SHORT).show()
-                                    }
-                                } catch (_: Exception) {
-                                    android.widget.Toast.makeText(context, translate("Unable to open this destination link.", language), android.widget.Toast.LENGTH_SHORT).show()
-                                }
-                            } else {
-                                android.widget.Toast.makeText(context, translate("No website available for this destination.", language), android.widget.Toast.LENGTH_SHORT).show()
-                            }
-                        },
+                        onClick = { selectedDestination = destination },
+                        onWebsiteClick = { openDestinationWebsite(context, destination.websiteUrl, language) },
                         onDetailsClick = { selectedDestination = destination }
                     )
                 }
@@ -151,21 +156,19 @@ fun DestinationScreen(onBackClick: () -> Unit = {}) {
                     TextButton(onClick = {
                         try {
                             val mapUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(destination.name + " " + destination.location)}")
-                            context.startActivity(Intent(Intent.ACTION_VIEW, mapUri))
+                            val mapIntent = Intent(Intent.ACTION_VIEW, mapUri).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            context.startActivity(mapIntent)
                         } catch (_: Exception) {
-                            android.widget.Toast.makeText(context, translate("Unable to open map.", language), android.widget.Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, translate("Unable to open map.", language), Toast.LENGTH_SHORT).show()
                         }
                     }) { Text(translate("View on Map", language)) }
 
                     if (destination.websiteUrl.isNotBlank()) {
                         TextButton(onClick = {
-                            try {
-                                val uri = Uri.parse(destination.websiteUrl)
-                                context.startActivity(Intent(Intent.ACTION_VIEW, uri))
-                                selectedDestination = null
-                            } catch (_: Exception) {
-                                android.widget.Toast.makeText(context, translate("Unable to open this destination link.", language), android.widget.Toast.LENGTH_SHORT).show()
-                            }
+                            openDestinationWebsite(context, destination.websiteUrl, language)
+                            selectedDestination = null
                         }) { Text(translate("Visit Website", language)) }
                     }
                 }
@@ -176,9 +179,19 @@ fun DestinationScreen(onBackClick: () -> Unit = {}) {
 }
 
 @Composable
-fun DestinationCard(destination: Destination, onFavoriteClick: () -> Unit, onClick: () -> Unit, onDetailsClick: () -> Unit) {
+fun DestinationCard(
+    destination: Destination,
+    onFavoriteClick: () -> Unit,
+    onClick: () -> Unit,
+    onWebsiteClick: () -> Unit,
+    onDetailsClick: () -> Unit
+) {
     val language = LocalLanguageManager.current.currentLanguage
-    Card(modifier = Modifier.fillMaxWidth().clickable { onClick() }, shape = RoundedCornerShape(20.dp), elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
         Column {
             Box(modifier = Modifier.fillMaxWidth().height(190.dp).clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)).background(Brush.verticalGradient(colors = listOf(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.secondaryContainer))), contentAlignment = Alignment.Center) {
                 if (destination.imageUrl.isNotBlank()) {
@@ -214,7 +227,7 @@ fun DestinationCard(destination: Destination, onFavoriteClick: () -> Unit, onCli
                         TextButton(onClick = onDetailsClick) {
                             Text(text = translate("Details", language), color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
                         }
-                        TextButton(onClick = onClick) {
+                        TextButton(onClick = onWebsiteClick) {
                             Text(text = translate("Visit Website", language), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                         }
                     }

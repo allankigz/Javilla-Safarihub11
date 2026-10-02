@@ -66,11 +66,19 @@ fun OfflineTravelScreen(onBackClick: () -> Unit) {
     )
 
     Scaffold(
-        containerColor = androidx.compose.ui.graphics.Color.Transparent,topBar = {
-        TopAppBar(title = { Text("Offline Travel Guide") }, navigationIcon = {
-            IconButton(onClick = onBackClick) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }
-        })
-    }) { padding ->
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
+        topBar = {
+            TopAppBar(
+                title = { Text("Offline Travel Guide") },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }
+                },
+                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                )
+            )
+        }
+    ) { padding ->
         selectedItem?.let { item ->
             OfflineDetailContent(item, padding) { selectedItem = null }
         } ?: run {

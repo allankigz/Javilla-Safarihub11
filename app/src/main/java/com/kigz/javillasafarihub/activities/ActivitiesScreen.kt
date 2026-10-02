@@ -97,7 +97,10 @@ fun ActivitiesScreen(onBackClick: () -> Unit = {}) {
                     IconButton(onClick = onBackClick) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
+                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                )
             )
         }
     ) { paddingValues ->
@@ -310,12 +313,10 @@ fun ActivityRepositoryCard(activity: Activity) {
             OutlinedButton(
                 onClick = {
                     try {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(activity.name + " " + activity.location)}"))
-                        if (intent.resolveActivity(context.packageManager) != null) {
-                            context.startActivity(intent)
-                        } else {
-                            Toast.makeText(context, translate("No browser or map app available.", language), Toast.LENGTH_SHORT).show()
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(activity.name + " " + activity.location)}")).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
+                        context.startActivity(intent)
                     } catch (_: Exception) {
                         Toast.makeText(context, translate("Unable to open location.", language), Toast.LENGTH_SHORT).show()
                     }

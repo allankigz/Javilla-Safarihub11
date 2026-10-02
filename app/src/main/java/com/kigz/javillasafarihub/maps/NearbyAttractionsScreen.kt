@@ -103,7 +103,10 @@ fun NearbyAttractionsScreen(onBackClick: () -> Unit = {}) {
                     IconButton(onClick = onBackClick) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                )
             )
         }
     ) { paddingValues ->
@@ -149,17 +152,21 @@ private fun NearbyAttractionCard(attraction: NearbyAttraction, distanceKm: Doubl
             Button(
                 onClick = {
                     val uri = "google.navigation:q=${attraction.latitude},${attraction.longitude}".toUri()
-                    val mapsIntent = Intent(Intent.ACTION_VIEW, uri).apply { setPackage("com.google.android.apps.maps") }
+                    val mapsIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+                        setPackage("com.google.android.apps.maps")
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
                     try {
-                        if (mapsIntent.resolveActivity(context.packageManager) != null) {
-                            context.startActivity(mapsIntent)
-                        } else {
-                            val fallback = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${attraction.latitude},${attraction.longitude}"))
-                            if (fallback.resolveActivity(context.packageManager) != null) context.startActivity(fallback)
-                            else android.widget.Toast.makeText(context, "No maps application is available.", android.widget.Toast.LENGTH_SHORT).show()
-                        }
+                        context.startActivity(mapsIntent)
                     } catch (_: Exception) {
-                        android.widget.Toast.makeText(context, "Unable to open navigation.", android.widget.Toast.LENGTH_SHORT).show()
+                        try {
+                            val fallback = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${attraction.latitude},${attraction.longitude}")).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            context.startActivity(fallback)
+                        } catch (_: Exception) {
+                            android.widget.Toast.makeText(context, "Unable to open navigation.", android.widget.Toast.LENGTH_SHORT).show()
+                        }
                     }
                 },
                 modifier = Modifier.padding(top = 8.dp)

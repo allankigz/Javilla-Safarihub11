@@ -618,16 +618,24 @@ fun SettingsContent(paddingValues: PaddingValues, onLoginClick: () -> Unit = {})
                 Text(translate("App Links", language), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(8.dp))
                 SettingsLinkItem("Notifications Settings", Icons.Default.Notifications) {
-                    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply { putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName) }
-                    try { if (intent.resolveActivity(context.packageManager) != null) context.startActivity(intent) } catch (_: Exception) {}
+                    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    try { context.startActivity(intent) } catch (_: Exception) {}
                 }
                 SettingsLinkItem("Application Info", Icons.Default.Settings) {
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply { data = Uri.fromParts("package", context.packageName, null) }
-                    try { if (intent.resolveActivity(context.packageManager) != null) context.startActivity(intent) } catch (_: Exception) {}
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    try { context.startActivity(intent) } catch (_: Exception) {}
                 }
                 SettingsLinkItem("Terms & Privacy", Icons.Default.Security) {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.kws.go.ke/terms-and-conditions"))
-                    try { if (intent.resolveActivity(context.packageManager) != null) context.startActivity(intent) else Toast.makeText(context, translate("No browser is available.", language), Toast.LENGTH_SHORT).show() } catch (_: Exception) { Toast.makeText(context, translate("Unable to open the link.", language), Toast.LENGTH_SHORT).show() }
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.kws.go.ke/terms-and-conditions")).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    try { context.startActivity(intent) } catch (_: Exception) { Toast.makeText(context, translate("Unable to open the link.", language), Toast.LENGTH_SHORT).show() }
                 }
             }
         }

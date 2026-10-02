@@ -90,11 +90,19 @@ fun AdminDashboardScreen(onBackClick: () -> Unit) {
     }
 
     Scaffold(
-        containerColor = androidx.compose.ui.graphics.Color.Transparent,topBar = {
-        TopAppBar(title = { Text(translate("Admin Dashboard", language)) }, navigationIcon = {
-            IconButton(onClick = onBackClick) { Icon(Icons.Default.AdminPanelSettings, contentDescription = "Back") }
-        })
-    }) { padding ->
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
+        topBar = {
+            TopAppBar(
+                title = { Text(translate("Admin Dashboard", language)) },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) { Icon(Icons.Default.AdminPanelSettings, contentDescription = "Back") }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                )
+            )
+        }
+    ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
             if (loading) LinearProgressIndicator(Modifier.fillMaxWidth())
             error?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(vertical = 8.dp)) }

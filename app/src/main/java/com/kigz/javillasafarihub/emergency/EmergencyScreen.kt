@@ -120,7 +120,10 @@ fun EmergencyScreen(
                             contentDescription = translate("Back", language)
                         )
                     }
-                }
+                },
+                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                )
             )
         }
     ) { paddingValues ->
@@ -357,13 +360,11 @@ private fun dialNumber(
     val intent = Intent(
         Intent.ACTION_DIAL,
         "tel:$number".toUri()
-    )
+    ).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
     try {
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            android.widget.Toast.makeText(context, translate("No phone app is available on this device.", language), android.widget.Toast.LENGTH_SHORT).show()
-        }
+        context.startActivity(intent)
     } catch (_: Exception) {
         android.widget.Toast.makeText(context, translate("Unable to open the phone app.", language), android.widget.Toast.LENGTH_SHORT).show()
     }
@@ -407,13 +408,11 @@ private fun shareCurrentLocation(
         }
 
         try {
-            val chooser = Intent.createChooser(shareIntent, "Share my location")
-            if (chooser.resolveActivity(context.packageManager) != null) {
-                context.startActivity(chooser)
-                onResult("Location found. Choose a messaging or sharing app to send it.")
-            } else {
-                onResult("No sharing app is available on this device.")
+            val chooser = Intent.createChooser(shareIntent, "Share my location").apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
+            context.startActivity(chooser)
+            onResult("Location found. Choose a messaging or sharing app to send it.")
         } catch (_: Exception) {
             onResult("Unable to open the sharing menu.")
         }

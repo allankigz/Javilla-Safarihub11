@@ -208,7 +208,10 @@ fun DestinationDetailsScreen(
                     onClick = {
                         try {
                             val mapUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(destination.name + " " + destination.location)}")
-                            context.startActivity(Intent(Intent.ACTION_VIEW, mapUri))
+                            val mapIntent = Intent(Intent.ACTION_VIEW, mapUri).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            context.startActivity(mapIntent)
                         } catch (_: Exception) {
                             android.widget.Toast.makeText(context, translate("Unable to open map.", language), android.widget.Toast.LENGTH_SHORT).show()
                         }
@@ -226,7 +229,11 @@ fun DestinationDetailsScreen(
                     OutlinedButton(
                         onClick = {
                             try {
-                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(destination.websiteUrl)))
+                                val uri = Uri.parse(destination.websiteUrl)
+                                val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                context.startActivity(intent)
                             } catch (_: Exception) {
                                 android.widget.Toast.makeText(context, translate("Unable to open the website.", language), android.widget.Toast.LENGTH_SHORT).show()
                             }

@@ -167,9 +167,10 @@ fun VerifiedServicesContent(
                     if (service.phone.isNotBlank()) {
                         OutlinedButton(onClick = {
                             try {
-                                val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${service.phone}"))
-                                if (intent.resolveActivity(context.packageManager) != null) context.startActivity(intent)
-                                else android.widget.Toast.makeText(context, translate("No phone app is available.", language), android.widget.Toast.LENGTH_SHORT).show()
+                                val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${service.phone}")).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                context.startActivity(intent)
                             } catch (_: Exception) {
                                 android.widget.Toast.makeText(context, translate("Unable to open the phone app.", language), android.widget.Toast.LENGTH_SHORT).show()
                             }
